@@ -22,5 +22,32 @@ pipeline {
                 }
             }
         }
+        stage ('Artifactory configuration') {
+            steps {
+                rtMavenDeployer (
+                    id: "jfrog",
+                    serverId: "swathi",
+                    releaseRepo: 'libs-release-local',
+                    snapshotRepo: 'libs-snapshot-local'
+                )
+            }
+        }
+        stage ('Exec Maven') {
+            steps {
+                rtMavenRun (
+                    tool: MAVEN_TOOL, // Tool name from Jenkins configuration
+                    pom: 'pom.xml',
+                    goals: 'clean install',
+                    deployerId: "jfrog",
+                    )
+            }
+        }
+        stage ('Publish build info') {
+            steps {
+                rtPublishBuildInfo (
+                    serverId: "swathi"
+                )
+            }
         }
     }
+}
