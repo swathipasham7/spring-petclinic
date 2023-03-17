@@ -15,5 +15,12 @@ pipeline {
                 sh './mvnw package'
             }
         }
+        stage("build & sonarqube") {
+            steps {
+              withSonarQubeEnv('My SonarQube Server') {
+                sh 'mvn clean package sonar:sonar'
+              }
+            }
+          }
     }
 }
